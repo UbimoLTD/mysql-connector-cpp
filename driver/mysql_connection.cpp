@@ -1138,6 +1138,8 @@ MySQL_Connection::nativeSQL(const sql::SQLString& sql)
 /* }}} */
 
 
+void(*cppconn_oridebug_logger)(const std::string&) = nullptr;
+
 /* {{{ MySQL_Connection::prepareStatement() -I- */
 sql::PreparedStatement *
 MySQL_Connection::prepareStatement(const sql::SQLString& sql)
@@ -1145,6 +1147,11 @@ MySQL_Connection::prepareStatement(const sql::SQLString& sql)
   CPP_ENTER_WL(intern->logger, "MySQL_Connection::prepareStatement");
   CPP_INFO_FMT("query=%s", sql.c_str());
   checkClosed();
+
+  extern void(*cppconn_oridebug_logger)(const std::string&);
+  if (cppconn_oridebug_logger)
+      cppconn_oridebug_logger("ORIDEBUG: Preparing query " + (const std::string&)sql);
+
   boost::shared_ptr< NativeAPI::NativeStatementWrapper > stmt;
 
   //TODO change - probably no need to catch and throw here. Logging can be done inside proxy
@@ -1635,4 +1642,3 @@ MySQL_Connection::reconnect()
  * vim600: noet sw=4 ts=4 fdm=marker
  * vim<600: noet sw=4 ts=4
  */
-

@@ -84,6 +84,10 @@ MySQL_Statement::do_query(const ::sql::SQLString &q)
 	CPP_INFO_FMT("this=%p", this);
 	checkClosed();
 
+    extern void(*cppconn_oridebug_logger)(const std::string&);
+    if (cppconn_oridebug_logger)
+        cppconn_oridebug_logger("ORIDEBUG: Preparing query " + q);
+
 	boost::shared_ptr< NativeAPI::NativeConnectionWrapper > proxy_p = proxy.lock();
 	if (!proxy_p) {
 		throw sql::InvalidInstanceException("Connection has been closed");
